@@ -426,7 +426,12 @@
     document.documentElement.style.setProperty("--header-h", h + "px");
   }
   syncHeaderOffset();
-  window.addEventListener("resize", syncHeaderOffset);
+  window.addEventListener("resize", () => {
+    syncHeaderOffset();
+    // Widening past the breakpoint should leave the drawer closed, not merely
+    // invisible — otherwise the burger reopens mid-state on the way back down.
+    if (window.innerWidth > 980) closeMenu();
+  });
 
   function onScroll() {
     const y = window.scrollY;
@@ -445,17 +450,29 @@
 
   // mobile menu
   const burger = $("#burger"), mobileNav = $("#mobileNav");
+
+  function closeMenu() {
+    burger.setAttribute("aria-expanded", "false");
+    mobileNav.hidden = true;
+  }
+
+  closeMenu();   // guarantee a closed starting state
+
   burger.addEventListener("click", () => {
     const open = burger.getAttribute("aria-expanded") === "true";
     burger.setAttribute("aria-expanded", String(!open));
     mobileNav.hidden = open;
   });
+
+  // Escape closes the drawer, as expected of any dismissible overlay.
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !mobileNav.hidden) { closeMenu(); burger.focus(); }
+  });
   // Close the menu BEFORE scrolling. If the browser jumps to the anchor while the
   // menu is still taking up space, the target lands behind the header once it closes.
   $$("#mobileNav a").forEach((a) => a.addEventListener("click", (e) => {
     const target = document.querySelector(a.getAttribute("href"));
-    burger.setAttribute("aria-expanded", "false");
-    mobileNav.hidden = true;
+    closeMenu();
     if (target) {
       e.preventDefault();
       requestAnimationFrame(() => {
