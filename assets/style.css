@@ -55,7 +55,13 @@ html[data-theme="light"] {
 /* ---------- base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+/* --header-h is kept in sync with the real header height by app.js; the fallback
+   covers the moment before scripts run. +1.5rem leaves the heading clear of it. */
+html {
+  --header-h: 72px;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 1.5rem);
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
@@ -194,7 +200,7 @@ button { font: inherit; color: inherit; }
 }
 
 .mobile-nav {
-  position: sticky; top: 72px; z-index: 99; display: grid; gap: .1rem; padding: .8rem 1.25rem 1.1rem;
+  position: sticky; top: var(--header-h, 72px); z-index: 99; display: grid; gap: .1rem; padding: .8rem 1.25rem 1.1rem;
   background: color-mix(in srgb, var(--bg) 94%, transparent);
   backdrop-filter: blur(16px); border-bottom: 1px solid var(--border);
 }

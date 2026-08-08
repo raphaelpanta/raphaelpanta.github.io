@@ -414,18 +414,30 @@
   // header state + scroll progress + active nav link
   const header = $("#siteHeader");
   const progress = $("#progress");
-  const sections = ["about", "impact", "experience", "skills", "writing", "code", "contact"];
+
+  // Sections in DOM order — NOT the order of the nav links. Reading them from the
+  // document keeps the active-link logic correct if sections are ever reordered.
+  const sections = $$("main section[id]");
+
+  // The anchor offset must match the real header height, otherwise clicking a nav
+  // link leaves the section heading tucked underneath it.
+  function syncHeaderOffset() {
+    const h = header.offsetHeight || 72;
+    document.documentElement.style.setProperty("--header-h", h + "px");
+  }
+  syncHeaderOffset();
+  window.addEventListener("resize", syncHeaderOffset);
 
   function onScroll() {
     const y = window.scrollY;
     header.classList.toggle("stuck", y > 8);
     const max = document.documentElement.scrollHeight - window.innerHeight;
-    progress.style.width = (max > 0 ? (y / max) * 100 : 0) + "%";
+    progress.style.width = (max > 0 ? Math.min(100, (y / max) * 100) : 0) + "%";
 
+    const line = (header.offsetHeight || 72) + 24;
     let current = "";
-    sections.forEach((id) => {
-      const n = document.getElementById(id);
-      if (n && n.getBoundingClientRect().top <= 140) current = id;
+    sections.forEach((n) => {
+      if (n.getBoundingClientRect().top <= line) current = n.id;
     });
     $$(".nav a").forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + current));
   }
@@ -438,9 +450,19 @@
     burger.setAttribute("aria-expanded", String(!open));
     mobileNav.hidden = open;
   });
-  $$("#mobileNav a").forEach((a) => a.addEventListener("click", () => {
+  // Close the menu BEFORE scrolling. If the browser jumps to the anchor while the
+  // menu is still taking up space, the target lands behind the header once it closes.
+  $$("#mobileNav a").forEach((a) => a.addEventListener("click", (e) => {
+    const target = document.querySelector(a.getAttribute("href"));
     burger.setAttribute("aria-expanded", "false");
     mobileNav.hidden = true;
+    if (target) {
+      e.preventDefault();
+      requestAnimationFrame(() => {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        history.replaceState(null, "", a.getAttribute("href"));
+      });
+    }
   }));
 
   // copy email
