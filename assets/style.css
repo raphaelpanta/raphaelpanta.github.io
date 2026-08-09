@@ -575,18 +575,17 @@ html[data-theme="light"] .connect-card[data-net="medium"] .connect-icon { backgr
   .nav { display: none; }
   .burger { display: flex; }
   .hero-inner { grid-template-columns: 1fr; }
-  .hero-photo { order: -1; width: min(30vw, 150px); justify-self: start; }
+  .hero-photo { order: -1; width: min(45vw, 190px); justify-self: start; }
   .about-grid { grid-template-columns: 1fr; }
   .brand-text { display: none; }
 }
 @media (max-width: 620px) {
   body { font-size: 16px; }
-  /* On a phone the portrait is a supporting detail, not the headline —
-     an avatar beside the eyebrow rather than a hero image. */
-  .hero-photo { width: min(26vw, 104px); }
-  .hero-photo img { border-radius: 50%; }
-  .photo-glow { inset: -10%; filter: blur(20px); opacity: .6; }
-  .photo-chip { display: none; }   /* too cramped to read at this size */
+  /* On a phone the portrait is a supporting detail, not the headline. */
+  .hero-photo { width: min(38vw, 140px); }
+  .hero-photo img { border-radius: 20px; }
+  .photo-chip { font-size: .9em; bottom: -11px; padding: .35rem .8rem; }
+  .photo-chip code { font-size: .66rem; }
   .job { padding-left: 1.7rem; }
   .timeline::before { left: 6px; }
   .job::before { width: 14px; height: 14px; }
