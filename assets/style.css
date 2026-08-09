@@ -23,33 +23,39 @@
 html[data-theme="dark"] {
   --bg: #08080f;
   --bg-2: #0e0e1a;
-  --surface: rgba(255,255,255,.035);
-  --surface-2: rgba(255,255,255,.06);
+  /* Dark glass, not white glass. A translucent white surface over the coloured
+     aurora produced washed-out panels where body text fell to ~2.8:1. */
+  --surface: rgba(18,18,26,.80);
+  --surface-2: rgba(26,26,38,.88);
   --border: rgba(255,255,255,.10);
   --border-strong: rgba(255,255,255,.18);
   --text: #f2f2f7;
   --text-2: #a7a7bd;
-  --text-3: #74748c;
+  --text-3: #9494ab;
   --shadow: 0 24px 60px -20px rgba(0,0,0,.8);
-  --aurora-op: .55;
+  --aurora-op: .30;
   --grid-op: .05;
   --chip-bg: rgba(255,255,255,.06);
+  /* For panels that must stay legible over the coloured aurora. --surface is
+     only 3.5% white, so it lets the gradient blobs bleed straight through. */
+  --surface-solid: rgba(22, 22, 31, .92);
 }
 
 html[data-theme="light"] {
   --bg: #fbfbff;
   --bg-2: #f2f1fb;
-  --surface: rgba(255,255,255,.75);
+  --surface: rgba(255,255,255,.88);
   --surface-2: #ffffff;
   --border: rgba(20,16,50,.10);
   --border-strong: rgba(20,16,50,.18);
   --text: #14102e;
-  --text-2: #55516f;
-  --text-3: #837fa0;
+  --text-2: #4d4967;
+  --text-3: #6e6a8c;
   --shadow: 0 20px 50px -24px rgba(40,20,90,.28);
-  --aurora-op: .38;
+  --aurora-op: .28;
   --grid-op: .05;
   --chip-bg: rgba(109,94,252,.08);
+  --surface-solid: rgba(255, 255, 255, .93);
 }
 
 /* ---------- base ---------- */
@@ -373,11 +379,11 @@ button { font: inherit; color: inherit; }
   margin-top: 1.8rem; padding: 1.4rem 1.5rem; border-radius: var(--radius);
   border: 1px solid var(--border); border-left: 3px solid transparent;
   background:
-    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(var(--surface-solid), var(--surface-solid)) padding-box,
     linear-gradient(180deg, var(--g1), var(--g3)) border-box;
 }
 .callout h3 { font-family: var(--font-display); margin: 0 0 .5rem; font-size: 1.02rem; }
-.callout p { margin: 0; color: var(--text-2); font-size: .95rem; }
+.callout p { margin: 0; color: var(--text); font-size: .95rem; }
 
 .facts dl { margin: 0; display: grid; gap: 1rem; }
 .facts dt { font-size: .74rem; text-transform: uppercase; letter-spacing: .09em; color: var(--text-3); margin-bottom: .15rem; }
