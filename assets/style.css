@@ -108,8 +108,12 @@ button { font: inherit; color: inherit; }
     radial-gradient(40rem 26rem at 88% 2%,  var(--g2), transparent 60%),
     radial-gradient(36rem 26rem at 70% 46%, var(--g4), transparent 60%),
     radial-gradient(34rem 24rem at 20% 62%, var(--g3), transparent 62%);
-  filter: blur(28px);
+  /* No filter: blur() here. A blur on an animated, position:fixed layer is
+     re-rasterised every frame and repainted on every scroll tick, which is what
+     made the page flicker. The radial gradients are already soft enough. */
   animation: drift 26s var(--ease) infinite alternate;
+  will-change: transform;
+  transform: translateZ(0);
 }
 @keyframes drift {
   0%   { transform: translate3d(0,0,0) scale(1); }
@@ -122,14 +126,19 @@ button { font: inherit; color: inherit; }
   background-size: 64px 64px;
   mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 30%, transparent 78%);
   -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 30%, transparent 78%);
+  transform: translateZ(0);   /* own compositor layer; stops mask repaint on scroll */
 }
 
 /* ---------- header ---------- */
 .site-header {
   position: sticky; top: 0; z-index: 100;
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
   border-bottom: 1px solid transparent;
+  /* Promote to its own layer so the backdrop-filter isn't recomposited against
+     a repainting background on every scroll frame. */
+  transform: translateZ(0);
+  backface-visibility: hidden;
   transition: background .3s var(--ease), border-color .3s var(--ease);
 }
 .site-header.stuck {
@@ -321,6 +330,7 @@ button { font: inherit; color: inherit; }
   position: absolute; inset: -14%; border-radius: 50%; z-index: 0; filter: blur(38px); opacity: .75;
   background: conic-gradient(from 0deg, var(--g1), var(--g2), var(--g3), var(--g4), var(--g1));
   animation: spin 16s linear infinite;
+  will-change: transform;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .photo-chip {
@@ -559,12 +569,17 @@ html[data-theme="light"] .connect-card[data-net="medium"] .connect-icon { backgr
   .nav { display: none; }
   .burger { display: flex; }
   .hero-inner { grid-template-columns: 1fr; }
-  .hero-photo { order: -1; width: min(100%, 250px); justify-self: start; }
+  .hero-photo { order: -1; width: min(45vw, 190px); justify-self: start; }
   .about-grid { grid-template-columns: 1fr; }
   .brand-text { display: none; }
 }
 @media (max-width: 620px) {
   body { font-size: 16px; }
+  /* On a phone the portrait is a supporting detail, not the headline. */
+  .hero-photo { width: min(38vw, 140px); }
+  .hero-photo img { border-radius: 20px; }
+  .photo-chip { font-size: .9em; bottom: -11px; padding: .35rem .8rem; }
+  .photo-chip code { font-size: .66rem; }
   .job { padding-left: 1.7rem; }
   .timeline::before { left: 6px; }
   .job::before { width: 14px; height: 14px; }
